@@ -36,6 +36,20 @@
       "when": 1791000945251,
       "tag": "0004_writing_suite",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791008295821,
+      "tag": "0005_apply_pending",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791008553783,
+      "tag": "0006_visuals_studio",
+      "breakpoints": true
     }
   ]
 }
