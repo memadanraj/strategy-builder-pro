@@ -92,6 +92,41 @@ export type Database = {
           },
         ]
       }
+      characters: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+          visual_notes: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+          visual_notes?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          visual_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "characters_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_transactions: {
         Row: {
           amount: number
@@ -354,6 +389,7 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          visual_style: string
         }
         Insert: {
           created_at?: string
@@ -366,6 +402,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id: string
+          visual_style?: string
         }
         Update: {
           created_at?: string
@@ -378,14 +415,17 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          visual_style?: string
         }
         Relationships: []
       }
       scenes: {
         Row: {
+          clip_path: string | null
           created_at: string
           duration_seconds: number
           id: string
+          image_path: string | null
           narration: string | null
           position: number
           project_id: string
@@ -394,9 +434,11 @@ export type Database = {
           visual_prompt: string | null
         }
         Insert: {
+          clip_path?: string | null
           created_at?: string
           duration_seconds?: number
           id?: string
+          image_path?: string | null
           narration?: string | null
           position?: number
           project_id: string
@@ -405,9 +447,11 @@ export type Database = {
           visual_prompt?: string | null
         }
         Update: {
+          clip_path?: string | null
           created_at?: string
           duration_seconds?: number
           id?: string
+          image_path?: string | null
           narration?: string | null
           position?: number
           project_id?: string
