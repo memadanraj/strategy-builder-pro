@@ -41,15 +41,11 @@ function composePrompt(project: any, characters: any[], visualPrompt: string) {
   return `${styleDirective(project.visual_style)}. ${aspect}. Scene: ${visualPrompt}.${charBlock}\nNo text, no watermarks, no logos.`;
 }
 
-async function generateImage(apiKey: string, model: string, prompt: string): Promise<Buffer> {
-  const res = await fetch(`${GATEWAY}/v1/chat/completions`, {
+async function generateImage(apiKey: string, model: string, prompt: string, vertical: boolean): Promise<Buffer> {
+  const res = await fetch(`${GATEWAY}/v1/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    }),
+    body: JSON.stringify({ model, prompt, size: vertical ? "1024x1536" : "1536x1024" }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -59,8 +55,7 @@ async function generateImage(apiKey: string, model: string, prompt: string): Pro
     throw new Error("Image generation failed.");
   }
   const json = await res.json();
-  const images = json.choices?.[0]?.message?.images;
-  const b64: string | undefined = images?.[0]?.image_url?.url?.split(",")[1];
+  const b64: string | undefined = json.data?.[0]?.b64_json;
   if (!b64) throw new Error("AI returned no image.");
   return Buffer.from(b64, "base64");
 }
@@ -141,7 +136,7 @@ async function runVisualJob(opts: {
       characters: ctx.characters,
       scene,
       apiKey,
-      model: task?.model ?? (opts.taskSlug === "generate_image" ? "google/gemini-3.1-flash-image" : "google/veo-3.1-lite"),
+      model: task?.model ?? (opts.taskSlug === "generate_image" ? "openai/gpt-image-2.5-sunburst" : "google/veo-3.1-lite"),
     });
     const path = `${ctx.project.user_id}/${opts.projectId}/${crypto.randomUUID()}.${out.ext}`;
     const up = await supabaseAdmin.storage.from("project-assets").upload(path, out.bytes, { contentType: out.contentType });
@@ -180,7 +175,7 @@ export const generateSceneImage = createServerFn({ method: "POST" })
       sceneId: data.sceneId,
       input: { sceneId: data.sceneId },
       work: async ({ project, characters, scene, apiKey, model }) => ({
-        bytes: await generateImage(apiKey, model, composePrompt(project, characters, scene.visual_prompt)),
+        bytes: await generateImage(apiKey, model, composePrompt(project, characters, scene.visual_prompt), project.format === "short"),
         ext: "png",
         contentType: "image/png",
         kind: "image",
