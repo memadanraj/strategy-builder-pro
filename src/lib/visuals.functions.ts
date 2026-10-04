@@ -136,7 +136,7 @@ async function runVisualJob(opts: {
       characters: ctx.characters,
       scene,
       apiKey,
-      model: task?.model ?? (opts.taskSlug === "generate_image" ? "google/gemini-3.1-flash-image" : "google/veo-3.1-lite"),
+      model: task?.model ?? (opts.taskSlug === "generate_image" ? "openai/gpt-image-2.5-sunburst" : "google/veo-3.1-lite"),
     });
     const path = `${ctx.project.user_id}/${opts.projectId}/${crypto.randomUUID()}.${out.ext}`;
     const up = await supabaseAdmin.storage.from("project-assets").upload(path, out.bytes, { contentType: out.contentType });
