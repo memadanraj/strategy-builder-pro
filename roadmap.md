@@ -8,7 +8,7 @@
 - [ ] Phase 06 AI writing — research, titles, scripts, editor
 - [x] Phase 07 Visuals — images, styles, characters, video
 - [ ] Phase 08 Audio — voice, music, SFX
-- [ ] Phase 09 Editor — timeline, preview, captions
+- [x] Phase 09 Editor — timeline, preview, captions
 - [ ] Phase 10 Rendering — queue, renderer, exports
 - [ ] Phase 11 Thumbnail studio
 - [ ] Phase 12 YouTube — OAuth, publishing, analytics
