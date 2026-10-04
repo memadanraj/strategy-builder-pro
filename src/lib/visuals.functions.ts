@@ -41,15 +41,11 @@ function composePrompt(project: any, characters: any[], visualPrompt: string) {
   return `${styleDirective(project.visual_style)}. ${aspect}. Scene: ${visualPrompt}.${charBlock}\nNo text, no watermarks, no logos.`;
 }
 
-async function generateImage(apiKey: string, model: string, prompt: string): Promise<Buffer> {
-  const res = await fetch(`${GATEWAY}/v1/chat/completions`, {
+async function generateImage(apiKey: string, model: string, prompt: string, vertical: boolean): Promise<Buffer> {
+  const res = await fetch(`${GATEWAY}/v1/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    }),
+    body: JSON.stringify({ model, prompt, size: vertical ? "1024x1536" : "1536x1024" }),
   });
   if (!res.ok) {
     const body = await res.text().catch(() => "");
@@ -59,8 +55,7 @@ async function generateImage(apiKey: string, model: string, prompt: string): Pro
     throw new Error("Image generation failed.");
   }
   const json = await res.json();
-  const images = json.choices?.[0]?.message?.images;
-  const b64: string | undefined = images?.[0]?.image_url?.url?.split(",")[1];
+  const b64: string | undefined = json.data?.[0]?.b64_json;
   if (!b64) throw new Error("AI returned no image.");
   return Buffer.from(b64, "base64");
 }
