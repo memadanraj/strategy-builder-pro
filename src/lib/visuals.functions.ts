@@ -175,7 +175,7 @@ export const generateSceneImage = createServerFn({ method: "POST" })
       sceneId: data.sceneId,
       input: { sceneId: data.sceneId },
       work: async ({ project, characters, scene, apiKey, model }) => ({
-        bytes: await generateImage(apiKey, model, composePrompt(project, characters, scene.visual_prompt)),
+        bytes: await generateImage(apiKey, model, composePrompt(project, characters, scene.visual_prompt), project.format === "short"),
         ext: "png",
         contentType: "image/png",
         kind: "image",
