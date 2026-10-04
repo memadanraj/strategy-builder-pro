@@ -75,7 +75,7 @@ export function VisualsPanel({ project }: { project: Tables<"projects"> }) {
   );
 }
 
-function SceneVisual({ scene, index, project, costs }: { scene: Tables<"scenes">; index: number; project: Tables<"projects">; costs?: Record<string, number> }) {
+function SceneVisual({ scene, index, project, costs }: { scene: Tables<"scenes">; index: number; project: Tables<"projects">; costs?: Record<string, number> | undefined }) {
   const qc = useQueryClient();
   const imgFn = useServerFn(generateSceneImage);
   const clipFn = useServerFn(generateSceneClip);
@@ -113,10 +113,10 @@ function SceneVisual({ scene, index, project, costs }: { scene: Tables<"scenes">
       <p className="line-clamp-2 text-xs text-muted-foreground">{scene.visual_prompt || "No visual description — add one in Scenes."}</p>
       <div className="mt-3 flex gap-2">
         <Button size="sm" variant="panel" disabled={!!busy || !scene.visual_prompt} onClick={() => run("image")}>
-          {busy === "image" ? <Loader2 className="animate-spin" /> : <ImageIcon />} Image · {costs?.generate_image ?? "…"} cr
+          {busy === "image" ? <Loader2 className="animate-spin" /> : <ImageIcon />} Image · {costs?.["generate_image"] ?? "…"} cr
         </Button>
         <Button size="sm" variant="panel" disabled={!!busy || !scene.visual_prompt} onClick={() => run("clip")}>
-          {busy === "clip" ? <Loader2 className="animate-spin" /> : <Film />} Clip · {costs?.generate_clip ?? "…"} cr
+          {busy === "clip" ? <Loader2 className="animate-spin" /> : <Film />} Clip · {costs?.["generate_clip"] ?? "…"} cr
         </Button>
       </div>
     </div>
