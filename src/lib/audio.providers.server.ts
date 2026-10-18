@@ -1,6 +1,6 @@
-export type AudioResult={bytes:Buffer;contentType:string;ext:string;providerAssetId?:string};
+export type AudioResult={bytes:Buffer;contentType:string;ext:string;providerAssetId?:string|undefined};
 async function fail(r:Response,msg:string):Promise<never>{const t=await r.text().catch(()=>"" );throw new Error(t.slice(0,300)||msg);}
-export interface TTSProvider{ synthesize(o:{text:string;voiceId:string;model?:string;instructions?:string;speed?:number}):Promise<AudioResult>; listVoices?():Promise<any[]>; clone?(o:{name:string;description?:string;file:Buffer;filename:string;contentType:string}):Promise<{voiceId:string;requiresVerification?:boolean}>; }
+export interface TTSProvider{ synthesize(o:{text:string;voiceId:string;model?:string;instructions?:string;speed?:number}):Promise<AudioResult>; listVoices?():Promise<any[]>; clone?(o:{name:string;description?:string|undefined;file:Buffer;filename:string;contentType:string}):Promise<{voiceId:string;requiresVerification?:boolean}>; }
 export interface MusicProvider{compose(o:{prompt:string;durationMs:number;model?:string}):Promise<AudioResult>}
 
 export class OpenAITTS implements TTSProvider{
@@ -14,5 +14,5 @@ export class ElevenLabs implements TTSProvider,MusicProvider{
  async clone(o:any){const f=new FormData();f.append("name",o.name);if(o.description)f.append("description",o.description);f.append("files[]",new Blob([o.file],{type:o.contentType}),o.filename);const r=await fetch("https://api.elevenlabs.io/v1/voices/add",{method:"POST",headers:{"xi-api-key":this.key},body:f});if(!r.ok)await fail(r,"Voice cloning failed");const j:any=await r.json();if(!j.voice_id)throw new Error("No cloned voice ID returned");return{voiceId:j.voice_id,requiresVerification:j.requires_verification}}
  async compose(o:any){const r=await fetch("https://api.elevenlabs.io/v1/music/stream?output_format=mp3_44100_128",{method:"POST",headers:{"xi-api-key":this.key,"Content-Type":"application/json"},body:JSON.stringify({prompt:o.prompt,music_length_ms:o.durationMs,model_id:o.model||"music_v2_5",force_instrumental:true})});if(!r.ok)await fail(r,"Music generation failed");return{bytes:Buffer.from(await r.arrayBuffer()),contentType:"audio/mpeg",ext:"mp3",providerAssetId:r.headers.get("song-id")||undefined}}
 }
-export function voiceProvider(name:string):TTSProvider{if(name==="openai"){const k=process.env.OPENAI_API_KEY;if(!k)throw new Error("OPENAI_API_KEY is not configured");return new OpenAITTS(k)}const k=process.env.ELEVENLABS_API_KEY;if(!k)throw new Error("ELEVENLABS_API_KEY is not configured");return new ElevenLabs(k)}
-export function musicProvider(){const k=process.env.ELEVENLABS_API_KEY;if(!k)throw new Error("ELEVENLABS_API_KEY is not configured");return new ElevenLabs(k)}
+export function voiceProvider(name:string):TTSProvider{if(name==="openai"){const k=process.env["OPENAI_API_KEY"];if(!k)throw new Error("OPENAI_API_KEY is not configured");return new OpenAITTS(k)}const k=process.env["ELEVENLABS_API_KEY"];if(!k)throw new Error("ELEVENLABS_API_KEY is not configured");return new ElevenLabs(k)}
+export function musicProvider(){const k=process.env["ELEVENLABS_API_KEY"];if(!k)throw new Error("ELEVENLABS_API_KEY is not configured");return new ElevenLabs(k)}
