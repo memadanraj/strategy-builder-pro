@@ -1,8 +1,10 @@
 import {createServerFn} from "@tanstack/react-start";
 import {z} from "zod";
 import {requireSupabaseAuth} from "@/integrations/supabase/auth-middleware";
-import {getRenderProvider,type RenderManifest} from "./render.providers.server";
-const admin:any=supabaseAdmin;
+import type {RenderManifest} from "./render.providers.server";
+const admin:any=new Proxy({},{get:(_t,k)=>{throw new Error("admin not loaded: "+String(k))}});
+let _a:any;async function loadAdmin(){if(!_a)_a=(await import("@/integrations/supabase/client.server")).supabaseAdmin;return _a}
+async function getRenderProvider(...a:any[]){const m:any=await import("./render.providers.server");return m.getRenderProvider(...a)}
 async function buildManifest(s:any,projectId:string){
  const [p,t,c,cap,a,set,sc]=await Promise.all([
   s.from("projects").select("id,title,format,user_id").eq("id",projectId).maybeSingle(),

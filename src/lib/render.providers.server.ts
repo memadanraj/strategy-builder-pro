@@ -3,7 +3,7 @@ export type RenderManifest = {
   scenes:any[]; tracks:any[]; clips:any[]; captions:any[]; assets:any[];
 };
 export type RenderSubmitResult={providerJobId:string};
-export type RenderStatus={status:"queued"|"processing"|"completed"|"failed";progress:number;outputUrl?:string;error?:string};
+export type RenderStatus={status:"queued"|"processing"|"completed"|"failed";progress:number;outputUrl?:string|undefined;error?:string|undefined};
 export interface RenderProvider{submit(manifest:RenderManifest):Promise<RenderSubmitResult>;status(providerJobId:string):Promise<RenderStatus>}
 export class HttpRenderProvider implements RenderProvider{
  constructor(private baseUrl:string,private apiKey?:string){}
