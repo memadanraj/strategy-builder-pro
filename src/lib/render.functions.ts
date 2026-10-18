@@ -1,7 +1,6 @@
 import {createServerFn} from "@tanstack/react-start";
 import {z} from "zod";
 import {requireSupabaseAuth} from "@/integrations/supabase/auth-middleware";
-import {supabaseAdmin} from "@/integrations/supabase/client.server";
 import {getRenderProvider,type RenderManifest} from "./render.providers.server";
 const admin:any=supabaseAdmin;
 async function buildManifest(s:any,projectId:string){
